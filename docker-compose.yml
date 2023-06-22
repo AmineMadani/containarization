@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  ysjdb:
+    build:
+      context: ./Docker-files/db
+    image: aminemad13/ysjdb
+    ports:
+      - "3306:3306"
+    volumes:
+      - ysjdbdata:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=ysjdbpass
+
+  ysjcache01:
+    image: memcached
+    ports:
+      - "11211:11211"
+
+  ysjmq01:
+    image: rabbitmq
+    ports:
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  ysjapp:
+    build:
+      context: ./Docker-files/app
+    image: aminemad13/ysjapp
+    container_name: ysjapp
+    ports:
+      - "8080:8080"
+    volumes: 
+      - ysjappdata:/usr/local/tomcat/webapps
+
+  ysjweb:
+    build:
+      context: ./Docker-files/web 
+    image: aminemad13/ysjweb
+    container_name: ysjweb
+    ports:
+      - "80:80"
+volumes:
+  ysjdbdata: {}
+  ysjappdata: {}
